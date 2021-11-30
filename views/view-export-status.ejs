@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>Login - Honest Mark</title>
+		<title>View export status - Honest Mark</title>
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -99,7 +99,7 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 	function initFlyouts(){
 		initPublishedFlyoutMenus(
 			[{"id":"556852976618333789","title":"Home","url":"index.html","target":"","nav_menu":false,"nonclickable":false},{"id":"279393328996398805","title":"Suppliers","url":"suppliers.html","target":"","nav_menu":false,"nonclickable":true},{"id":"677441136774221827","title":"Exporters","url":"exporters.html","target":"","nav_menu":false,"nonclickable":true},{"id":"714135202878956093","title":"Admin","url":"admin.html","target":"","nav_menu":false,"nonclickable":true},{"id":"556806345710634529","title":"H&M Group Admin","url":"hm-group-admin.html","target":"","nav_menu":false,"nonclickable":true}],
-			"457456728160359826",
+			"877232401757458411",
 			'',
 			'active',
 			false,
@@ -112,7 +112,7 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 		
 		
 	</head>
-	<body class="no-header  wsite-theme-light  wsite-page-initiate-purchase-order header-title-off phone-number-off location-off time-open-off top-header-sticky-off sticky-nav-on custom-option-on menu-style-1 dropdown-menu-1 sticky-button-on ToTop-on section-6-off section-7-off section-26-off section-27-off section-36-off section-37-off slide-4-off slide-5-off slide-24-off slide-25-off "><div id="wrapper">
+	<body class="no-header  wsite-theme-light  wsite-page-view-export-status header-title-off phone-number-off location-off time-open-off top-header-sticky-off sticky-nav-on custom-option-on menu-style-1 dropdown-menu-1 sticky-button-on ToTop-on section-6-off section-7-off section-26-off section-27-off section-36-off section-37-off slide-4-off slide-5-off slide-24-off slide-25-off "><div id="wrapper">
 		<div id="wrapper_header">
 			<div class="search clearfix">
 				<div class="main clearfix">
@@ -169,7 +169,7 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 			<div class="wsite-menu-wrap" style="display:none">
 	<ul class="wsite-menu">
 		<li id="wsite-nav-457456728160359826"
-	class="wsite-menu-subitem-wrap wsite-nav-current"
+	class="wsite-menu-subitem-wrap "
 	>
 	<a
 				href="initiate-purchase-order.html"
@@ -234,7 +234,7 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 			<div class="wsite-menu-wrap" style="display:none">
 	<ul class="wsite-menu">
 		<li id="wsite-nav-877232401757458411"
-	class="wsite-menu-subitem-wrap "
+	class="wsite-menu-subitem-wrap wsite-nav-current"
 	>
 	<a
 				href="view-export-status.html"
@@ -507,7 +507,7 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 									<div class="wsite-menu-wrap" style="display:none">
 	<ul class="wsite-menu">
 		<li id="wsite-nav-457456728160359826"
-	class="wsite-menu-subitem-wrap wsite-nav-current"
+	class="wsite-menu-subitem-wrap "
 	>
 	<a
 				href="initiate-purchase-order.html"
@@ -572,7 +572,7 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 									<div class="wsite-menu-wrap" style="display:none">
 	<ul class="wsite-menu">
 		<li id="wsite-nav-877232401757458411"
-	class="wsite-menu-subitem-wrap "
+	class="wsite-menu-subitem-wrap wsite-nav-current"
 	>
 	<a
 				href="view-export-status.html"
@@ -837,12 +837,12 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 		<div id="main-container" class="clearfix">
 			<div id="wsite-content" class="wsite-elements wsite-not-footer">
 	<div class="wsite-section-wrap">
-	<div class="wsite-section wsite-body-section wsite-section-bg-color wsite-background-10" style="height: 423px;background-color: #ffffff;background-image: none;is_customized: 1;" >
+	<div class="wsite-section wsite-body-section wsite-section-bg-color wsite-background-31" style="height: 423px;background-color: #ffffff;background-image: none;is_customized: 1;" >
 		<div class="wsite-section-content">
 				<div class="main">
 					
 			<div class="wsite-section-elements">
-				<div><div id="570523114449496629" align="inherit" style="width: 100%; overflow-y: hidden;" class="wcustomhtml"><script>
+				<div><div id="831379533177358802" align="inherit" style="width: 100%; overflow-y: hidden;" class="wcustomhtml"><script>
   var v_dpTotalCount = 2;
   var v_dpCounter = 0;
 </script>
@@ -852,20 +852,36 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 
 </div>
 
+<div class="paragraph" style="text-align:right;">
+	<p><b>Username: <%= username %></b></p>
+	<p><b>Business unit: <%= customerId %></b></p>
+	<a href="/logout.html"><button type="button">Logout</button></a>
+</div>
+
+<div class="paragraph"><font size="5">EXPORTERS - view export status</font></div>
+
+<div class="wsite-spacer" style="height:50px;"></div>
+
 <div class="paragraph" style="text-align:left;">
-	<!-- login -->
-	<form action="/login.html" method="POST">
-		<p>User name <input type="text" name="username"></input></p>
-		<p>Password <input type="password" name="password"></input></p>
-		<button type="submit">Login</button>
+	<h4 style="color: <%= statusColour %>"><font size="3"><%= status %></font></h4>
+	<form action="/view-export-status.html" method="POST">
+		<h4><font size="3">Search by store / date</font></h4>
+		<p>Store <input type="text" name="store"></input></p>
+		<p>From date (yyyy-MM-dd) <input type="text" name="fromDate"></input> To date (yyyy-MM-dd) <input type="text" name="toDate"></input></p>
+		<p>Type
+			<select name="type">
+				<option value ="any">Any</option>
+				<option value ="Allocation">Allocation</option>
+				<option value ="Replenishment">Replenishment</option>
+			</select>
+		</p>
+		<button type="submit">Search</button>
 	</form>
 </div>
 
 <div class="wsite-spacer" style="height:50px;"></div>
 
-<div class="wsite-spacer" style="height:532px;"></div>
-
-<div><div id="112798989791832842" align="left" style="width: 100%; overflow-y: hidden;" class="wcustomhtml"><script type="text/javascript">
+<div><div id="749167506684221071" align="left" style="width: 100%; overflow-y: hidden;" class="wcustomhtml"><script type="text/javascript">
 document.addEventListener('DataPageReady', function (v_e) 
   {try{document.getElementsByName('cb-auth-box')[v_dpCounter].style.display = "none";}catch(v_e){}
     v_dpCounter +=1;
@@ -877,7 +893,8 @@ document.addEventListener('DataPageReady', function (v_e)
 	       }
 	    }
 	 });
-</script></div>
+</script>
+</div>
 
 
 
@@ -890,7 +907,7 @@ document.addEventListener('DataPageReady', function (v_e)
 	</div>
 </div>
 <div class="wsite-section-wrap">
-	<div class="wsite-section wsite-body-section wsite-background-65" style="height: auto;" >
+	<div class="wsite-section wsite-body-section wsite-background-70" style="height: auto;" >
 		<div class="wsite-section-content">
 				<div class="main">
 					

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>Login - Honest Mark</title>
+		<title>View order status - Honest Mark</title>
 
-
+		<base href="/">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -99,7 +99,7 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 	function initFlyouts(){
 		initPublishedFlyoutMenus(
 			[{"id":"556852976618333789","title":"Home","url":"index.html","target":"","nav_menu":false,"nonclickable":false},{"id":"279393328996398805","title":"Suppliers","url":"suppliers.html","target":"","nav_menu":false,"nonclickable":true},{"id":"677441136774221827","title":"Exporters","url":"exporters.html","target":"","nav_menu":false,"nonclickable":true},{"id":"714135202878956093","title":"Admin","url":"admin.html","target":"","nav_menu":false,"nonclickable":true},{"id":"556806345710634529","title":"H&M Group Admin","url":"hm-group-admin.html","target":"","nav_menu":false,"nonclickable":true}],
-			"457456728160359826",
+			"697347909889200888",
 			'',
 			'active',
 			false,
@@ -112,7 +112,7 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 		
 		
 	</head>
-	<body class="no-header  wsite-theme-light  wsite-page-initiate-purchase-order header-title-off phone-number-off location-off time-open-off top-header-sticky-off sticky-nav-on custom-option-on menu-style-1 dropdown-menu-1 sticky-button-on ToTop-on section-6-off section-7-off section-26-off section-27-off section-36-off section-37-off slide-4-off slide-5-off slide-24-off slide-25-off "><div id="wrapper">
+	<body class="no-header  wsite-theme-light  wsite-page-view-order-status header-title-off phone-number-off location-off time-open-off top-header-sticky-off sticky-nav-on custom-option-on menu-style-1 dropdown-menu-1 sticky-button-on ToTop-on section-6-off section-7-off section-26-off section-27-off section-36-off section-37-off slide-4-off slide-5-off slide-24-off slide-25-off "><div id="wrapper">
 		<div id="wrapper_header">
 			<div class="search clearfix">
 				<div class="main clearfix">
@@ -169,7 +169,7 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 			<div class="wsite-menu-wrap" style="display:none">
 	<ul class="wsite-menu">
 		<li id="wsite-nav-457456728160359826"
-	class="wsite-menu-subitem-wrap wsite-nav-current"
+	class="wsite-menu-subitem-wrap "
 	>
 	<a
 				href="initiate-purchase-order.html"
@@ -182,7 +182,7 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 	
 </li>
 <li id="wsite-nav-697347909889200888"
-	class="wsite-menu-subitem-wrap "
+	class="wsite-menu-subitem-wrap wsite-nav-current"
 	>
 	<a
 				href="view-order-status.html"
@@ -507,7 +507,7 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 									<div class="wsite-menu-wrap" style="display:none">
 	<ul class="wsite-menu">
 		<li id="wsite-nav-457456728160359826"
-	class="wsite-menu-subitem-wrap wsite-nav-current"
+	class="wsite-menu-subitem-wrap "
 	>
 	<a
 				href="initiate-purchase-order.html"
@@ -520,7 +520,7 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 	
 </li>
 <li id="wsite-nav-697347909889200888"
-	class="wsite-menu-subitem-wrap "
+	class="wsite-menu-subitem-wrap wsite-nav-current"
 	>
 	<a
 				href="view-order-status.html"
@@ -837,12 +837,12 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 		<div id="main-container" class="clearfix">
 			<div id="wsite-content" class="wsite-elements wsite-not-footer">
 	<div class="wsite-section-wrap">
-	<div class="wsite-section wsite-body-section wsite-section-bg-color wsite-background-10" style="height: 423px;background-color: #ffffff;background-image: none;is_customized: 1;" >
+	<div class="wsite-section wsite-body-section wsite-section-bg-color wsite-background-11" style="height: 423px;background-color: #ffffff;background-image: none;is_customized: 1;" >
 		<div class="wsite-section-content">
 				<div class="main">
 					
 			<div class="wsite-section-elements">
-				<div><div id="570523114449496629" align="inherit" style="width: 100%; overflow-y: hidden;" class="wcustomhtml"><script>
+				<div><div id="571564810749881224" align="inherit" style="width: 100%; overflow-y: hidden;" class="wcustomhtml"><script>
   var v_dpTotalCount = 2;
   var v_dpCounter = 0;
 </script>
@@ -852,20 +852,92 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 
 </div>
 
-<div class="paragraph" style="text-align:left;">
-	<!-- login -->
-	<form action="/login.html" method="POST">
-		<p>User name <input type="text" name="username"></input></p>
-		<p>Password <input type="password" name="password"></input></p>
-		<button type="submit">Login</button>
-	</form>
+<div class="paragraph" style="text-align:right;">
+	<p><b>Username: <%= username %></b></p>
+	<p><b>Business unit: <%= customerId %></b></p>
+	<a href="/logout.html"><button type="button">Logout</button></a>
 </div>
+
+<div class="paragraph" style="text-align:left;"><font size="5">SUPPLIERS - view order status&nbsp;</font></div>
 
 <div class="wsite-spacer" style="height:50px;"></div>
 
-<div class="wsite-spacer" style="height:532px;"></div>
+<script>
+	function submitPut(form) {
+		const id = "<%= orderHeader.editableId %>";
+		const orderNumber = "<%= orderHeader.orderNumber %>";
+		const season = "<%= orderHeader.season %>";
+		const specRequiredItems = document.getElementById("specRequiredItems").value;
+		const specOrderStatus = document.getElementById("specOrderStatus").value;
 
-<div><div id="112798989791832842" align="left" style="width: 100%; overflow-y: hidden;" class="wcustomhtml"><script type="text/javascript">
+		form.action = "/view-order-status_2.html/put?id=" + id
+		+ "&orderNumber=" + orderNumber
+		+ "&season=" + season
+		+ "&requiredItems=" + specRequiredItems
+		+ "&orderStatus=" + specOrderStatus;
+	}
+</script>
+
+<h4 style="color: <%= statusColour %>"><font size="3"><%= status %></font></h4>
+<table style="width:100%">
+  <tr>
+    <th>Order number</th>
+    <th>Season</th>
+    <th>Required items</th>
+    <th>Order status</th>
+    <th>Left outstanding</th>
+  </tr>
+  <% items.forEach(function(item) { %>
+  	<tr>
+  		<td><%= item.orderNumber %></td>
+  		<td><%= item.season %></td>
+  		<td>
+  			<% if (orderHeader.editableId === item.id) { %>
+  				<input type="text" name="requiredItems" id="specRequiredItems" value="<%= item.requiredItems %>"></input>
+			<% } else { %>
+				<%= item.requiredItems %>
+			<% } %>
+  		</td>
+  		<td>
+  			<% if (orderHeader.editableId === item.id) { %>
+  				<select name="orderStatus" id="specOrderStatus">
+  					<option value="<%= item.orderStatus %>"><%= item.orderStatus %></option>
+  					<option value="APPROVED">APPROVED</option>
+  				</select>
+			<% } else { %>
+				<%= item.orderStatus %>
+			<% } %>
+  		</td>
+  		<td><%= item.leftOutstanding %></td>
+  		<td>
+  			<% if (orderHeader.editableId === item.id) { %>
+  				<form onsubmit="submitPut(this);" method="POST">
+  					<button type="submit">Update</button>
+  				</form>
+  			<% } else { %>
+  				<form action="/view-order-status_2.html/edit?id=<%= item.id %>&orderNumber=<%= orderHeader.orderNumber %>&season=<%= orderHeader.season %>" method="POST">
+  					<button type="submit">Edit</button>
+  				</form>
+  			<% } %>
+  		</td>
+  		<td>
+  			<% if (orderHeader.editableId === item.id) { %>
+  				<form action="/view-order-status_2.html/cancel?orderNumber=<%= orderHeader.orderNumber %>&season=<%= orderHeader.season %>" method="POST">
+  					<button type="submit">Cancel</button>
+  				</form>
+  			<% } else { %>
+  				<form action="/view-order-status_2.html/del?id=<%= item.id %>&orderNumber=<%= orderHeader.orderNumber %>&season=<%= orderHeader.season %>" method="POST">
+  					<button type="submit">Delete</button>
+  				</form>
+  			<% } %>
+  		</td>
+  	</tr>
+  <% }) %>
+</table>
+
+<div class="wsite-spacer" style="height:50px;"></div>
+
+<div><div id="676104831907231167" align="left" style="width: 100%; overflow-y: hidden;" class="wcustomhtml"><script type="text/javascript">
 document.addEventListener('DataPageReady', function (v_e) 
   {try{document.getElementsByName('cb-auth-box')[v_dpCounter].style.display = "none";}catch(v_e){}
     v_dpCounter +=1;
@@ -877,7 +949,8 @@ document.addEventListener('DataPageReady', function (v_e)
 	       }
 	    }
 	 });
-</script></div>
+</script>
+</div>
 
 
 
@@ -890,12 +963,20 @@ document.addEventListener('DataPageReady', function (v_e)
 	</div>
 </div>
 <div class="wsite-section-wrap">
-	<div class="wsite-section wsite-body-section wsite-background-65" style="height: auto;" >
+	<div class="wsite-section wsite-body-section wsite-section-bg-color wsite-background-66" style="height: auto;background-color: transparent;background-image: none;is_customized: ;" >
 		<div class="wsite-section-content">
 				<div class="main">
 					
 			<div class="wsite-section-elements">
-				
+				<div class="wsite-spacer" style="height:69px;"></div>
+
+<h2 class="wsite-content-title" style="text-align:center;"></h2>
+
+<div class="wsite-spacer" style="height:12px;"></div>
+
+<div class="wsite-spacer" style="height:29px;"></div>
+
+<div class="wsite-spacer" style="height:71px;"></div>
 			</div>
 		
 				</div>
