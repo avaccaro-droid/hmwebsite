@@ -863,12 +863,14 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 <div class="wsite-spacer" style="height:50px;"></div>
 
 <h4 style="color: <%= statusColour %>"><font size="3"><%= status %></font></h4>
-<table style="width:100%">
+<h4 style="text-align:left;"><font size="3">Total count: <%= totalCount %></font></h4>
+<table style="width:100%" class="standard">
   <tr>
     <th>Season</th>
     <th>Order number</th>
     <th>GTIN</th>
     <th>Serial number</th>
+    <th>Order status</th>
   </tr>
   <% items.forEach(function(item) { %>
   	<tr>
@@ -876,6 +878,7 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
   		<td><%= item.orderNumber %></td>
   		<td><%= item.gtin %></td>
   		<td><%= item.serialNumber %></td>
+  		<td>CLOSED</td>
   	</tr>
   <% }) %>
 </table>
@@ -938,7 +941,7 @@ document.addEventListener('DataPageReady', function (v_e)
 			<div class="footer_bottom">
 				<div class="main">
 					<div class='wsite-elements wsite-footer'>
-<div class="paragraph" style="text-align:left;"><font size="1">Copyright &copy; 2019, 2020<br />&#8203;1.0.2.4<br />Powered by software developed by Mobilis Consulting Ltd.</font><br /></div></div>
+<div class="paragraph" style="text-align:left;"><font size="1">Copyright &copy; 2019, 2020, 2021<br />&#8203;1.0.0<br />Powered by software developed by Mobilis Consulting Ltd.</font><br /></div></div>
 				</div>
 			</div>
 		</div>

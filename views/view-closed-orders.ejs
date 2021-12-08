@@ -864,11 +864,21 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 
 <div class="paragraph" style="text-align:left;">
 	<h4 style="color: <%= statusColour %>"><font size="3"><%= status %></font></h4>
+	<h4><font size="3">Search for closed purchase order</font></h4>
 	<form action="/view-closed-orders.html" method="POST">
-		<h4><font size="3">Search for closed purchase order</font></h4>
-		<p>Order number (6 digits) <input type="text" name="orderNumber"></input></p>
-		<p>Season (6 digits yyyyss) <input type="text" name="season"></input></p>
-		<button type="submit">Search</button>
+		<table style="width:40%">
+			<tr style="height:50px">
+				<td>Order number (6 digits)</td>
+				<td><input type="text" name="orderNumber"></input></td>
+			</tr>
+			<tr style="height:50px">
+				<td>Season (6 digits yyyyss)</td>
+				<td><input type="text" name="season"></input></td>
+			</tr>
+			<tr style="height:50px">
+				<td><button type="submit">Search</button></td>
+			</tr>
+		</table>
 	</form>
 </div>
 
@@ -930,7 +940,7 @@ document.addEventListener('DataPageReady', function (v_e)
 			<div class="footer_bottom">
 				<div class="main">
 					<div class='wsite-elements wsite-footer'>
-<div class="paragraph" style="text-align:left;"><font size="1">Copyright &copy; 2019, 2020<br />&#8203;1.0.2.4<br />Powered by software developed by Mobilis Consulting Ltd.</font><br /></div></div>
+<div class="paragraph" style="text-align:left;"><font size="1">Copyright &copy; 2019, 2020, 2021<br />&#8203;1.0.0<br />Powered by software developed by Mobilis Consulting Ltd.</font><br /></div></div>
 				</div>
 			</div>
 		</div>

@@ -3,7 +3,7 @@
 	<head>
 		<title>View scans - Honest Mark</title>
 
-
+		<base href="/">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
 
@@ -864,13 +864,47 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 
 <div class="paragraph" style="text-align:left;">
 	<h4 style="color: <%= statusColour %>"><font size="3"><%= status %></font></h4>
+	<h4><font size="3">Search for purchase order</font></h4>
 	<form action="/view-scans.html" method="POST">
-		<h4><font size="3">Search for purchase order</font></h4>
-		<p>Order number (6 digits) <input type="text" name="orderNumber"></input></p>
-		<p>Season (6 digits yyyyss) <input type="text" name="season"></input></p>
-		<button type="submit">Search</button>
+		<table style="width:40%">
+			<tr style="height:50px">
+				<td>Order number (6 digits)</td>
+				<td><input type="text" name="orderNumber"></input></td>
+			</tr>
+			<tr style="height:50px">
+				<td>Season (6 digits yyyyss)</td>
+				<td><input type="text" name="season"></input></td>
+			</tr>
+			<tr style="height:50px">
+				<td><button type="submit">Search</button></td>
+			</tr>
+		</table>
 	</form>
 </div>
+
+<div class="wsite-spacer" style="height:50px;"></div>
+
+<form action="/view-scans.html/del?orderNumber=<%= orderHeader.orderNumber %>&season=<%= orderHeader.season %>" method="POST">
+	<button type="submit">Delete</button>
+	<table style="width:100%" class="standard">
+  		<tr>
+  			<th></th>
+    		<th>Season</th>
+    		<th>Order number</th>
+    		<th>GTIN</th>
+    		<th>Serial number</th>
+  		</tr>
+  		<% items.forEach(function(item) { %>
+		<tr>
+  			<td><input type="checkbox" id="<%= item.id %>" name="<%= item.id %>"></td>
+  			<td><%= item.season %></td>
+  			<td><%= item.orderNumber %></td>
+  			<td><%= item.gtin %></td>
+  			<td><%= item.serialNumber %></td>
+  		</tr>
+  		<% }) %>
+	</table>
+</form>
 
 <div class="wsite-spacer" style="height:50px;"></div>
 

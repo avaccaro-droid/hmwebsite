@@ -864,34 +864,47 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 
 <div class="paragraph" style="text-align:left;">
 	<h4 style="color: <%= statusColour %>"><font size="3"><%= status %></font></h4>
+	<h4><font size="3">Enter the purchase order detail</font></h4>
 	<form action="/initiate-purchase-order.html" method="POST">
-		<h4><font size="3">Enter the purchase order detail</font></h4>
-		<p>Order number (6 digits) <input type="text" name="orderNumber"></input></p>
-		<p>Season (ssyyyy)
-			<select name="ss">
-				<option value ="01">01</option>
-				<option value ="02">02</option>
-				<option value ="03">03</option>
-				<option value ="04">04</option>
-				<option value ="05">05</option>
-				<option value ="06">06</option>
-				<option value ="07">07</option>
-				<option value ="08">08</option>
-				<option value ="09">09</option>
-				<option value ="10">10</option>
-			</select>
-			-
-			<select name="yyyy">
-				<option value ="2020">2020</option>
-				<option value ="2021">2021</option>
-				<option value ="2022">2022</option>
-				<option value ="2023">2023</option>
-				<option value ="2024">2024</option>
-				<option value ="2025">2025</option>
-			</select>
-		</p>
-		<p>Item count required <input type="text" name="itemCountRequired"></input></p>
-		<button type="submit">Submit</button>
+		<table style="width:40%">
+			<tr style="height:35px">
+				<td>Order number (6 digits)</td>
+				<td><input type="text" name="orderNumber"></input></td>
+			</tr>
+			<tr style="height:35px">
+				<td>Season (ssyyyy)</td>
+				<td>
+					<select name="ss">
+						<option value ="01">01</option>
+						<option value ="02">02</option>
+						<option value ="03">03</option>
+						<option value ="04">04</option>
+						<option value ="05">05</option>
+						<option value ="06">06</option>
+						<option value ="07">07</option>
+						<option value ="08">08</option>
+						<option value ="09">09</option>
+						<option value ="10">10</option>
+					</select>
+					-
+					<select name="yyyy">
+						<option value ="2020">2020</option>
+						<option value ="2021">2021</option>
+						<option value ="2022">2022</option>
+						<option value ="2023">2023</option>
+						<option value ="2024">2024</option>
+						<option value ="2025">2025</option>
+					</select>
+				</td>
+			</tr>
+			<tr style="height:35px">
+				<td>Item count required</td>
+				<td><input type="text" name="itemCountRequired"></input></td>
+			</tr>
+			<tr style="height:35px">
+				<td><button type="submit">Submit</button></td>
+			</tr>
+		</table>
 	</form>
 </div>
 

@@ -863,29 +863,48 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 <div class="wsite-spacer" style="height:50px;"></div>
 
 <script>
-	function submitPut(form) {
+	function submitPut(form, leftOutstanding, selectedOrderNumber, selectedSeason) {
 		const id = "<%= orderHeader.editableId %>";
 		const orderNumber = "<%= orderHeader.orderNumber %>";
 		const season = "<%= orderHeader.season %>";
 		const specRequiredItems = document.getElementById("specRequiredItems").value;
 		const specOrderStatus = document.getElementById("specOrderStatus").value;
 
-		form.action = "/view-order-status_2.html/put?id=" + id
-		+ "&orderNumber=" + orderNumber
-		+ "&season=" + season
-		+ "&requiredItems=" + specRequiredItems
-		+ "&orderStatus=" + specOrderStatus;
+		if (leftOutstanding > 0) {
+			let result = confirm("There are still items left outstanding, would you like to proceed?");
+
+			if (result) {
+				form.action = "/view-order-status_2.html/put?id=" + id
+					+ "&orderNumber=" + orderNumber
+					+ "&season=" + season
+					+ "&requiredItems=" + specRequiredItems
+					+ "&orderStatus=" + specOrderStatus
+					+ "&selectedOrderNumber=" + selectedOrderNumber
+					+ "&selectedSeason=" + selectedSeason;
+			}
+		} else {
+			form.action = "/view-order-status_2.html/put?id=" + id
+				+ "&orderNumber=" + orderNumber
+				+ "&season=" + season
+				+ "&requiredItems=" + specRequiredItems
+				+ "&orderStatus=" + specOrderStatus
+				+ "&selectedOrderNumber=" + selectedOrderNumber
+				+ "&selectedSeason=" + selectedSeason;
+		}
 	}
 </script>
 
 <h4 style="color: <%= statusColour %>"><font size="3"><%= status %></font></h4>
-<table style="width:100%">
+<table style="width:100%" class="standard">
   <tr>
     <th>Order number</th>
     <th>Season</th>
     <th>Required items</th>
     <th>Order status</th>
     <th>Left outstanding</th>
+    <th></th>
+    <th></th>
+    <th></th>
   </tr>
   <% items.forEach(function(item) { %>
   	<tr>
@@ -909,9 +928,10 @@ _W.setup_model_rpc({"rpc_namespace":"_W.CustomerAccounts.RPC","model_namespace":
 			<% } %>
   		</td>
   		<td><%= item.leftOutstanding %></td>
+  		<td><a href="/view-scans.html?orderNumber=<%= item.orderNumber %>&season=<%= item.season %>">View scans</a></td>
   		<td>
   			<% if (orderHeader.editableId === item.id) { %>
-  				<form onsubmit="submitPut(this);" method="POST">
+  				<form onsubmit="submitPut(this, <%= item.leftOutstanding %>, <%= item.orderNumber %>, <%= item.season %>);" method="POST">
   					<button type="submit">Update</button>
   				</form>
   			<% } else { %>

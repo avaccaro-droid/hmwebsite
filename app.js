@@ -164,6 +164,52 @@ function getOrderHeaderSearchParams(orderHeader, closedOnly) {
 	return params;
 }
 
+function getOrderHeaderSearchParams(orderHeader, closedOnly, omitClosed) {
+	let filterExpression = "#customerId = :customerId";
+	let expressionAttributeNames = "{\"#customerId\": \"customerId\"";
+	let expressionAttributeValues = "{\":customerId\": \"" + orderHeader.customerId + "\"";
+
+	//did the user give us valid order number data?
+	if (orderHeader.orderNumber !== null && typeof orderHeader.orderNumber !== 'undefined' && orderHeader.orderNumber.length > 0) {
+		filterExpression += " and #orderNumber = :orderNumber";
+		expressionAttributeNames += ",\"#orderNumber\": \"orderNumber\"";
+		expressionAttributeValues += ",\":orderNumber\": \"" + orderHeader.orderNumber + "\"";
+	}
+
+	//did the user give us valid season data?
+	if (orderHeader.season !== null && typeof orderHeader.season !== 'undefined' && orderHeader.season.length > 0) {
+		filterExpression += " and #season = :season";
+		expressionAttributeNames += ",\"#season\": \"season\"";
+		expressionAttributeValues += ",\":season\": \"" + orderHeader.season + "\"";
+	}
+
+	//are we searching for closed orders only?
+	if (closedOnly) {
+		filterExpression += " and #orderStatus = :orderStatus";
+		expressionAttributeNames += ",\"#orderStatus\": \"orderStatus\"";
+		expressionAttributeValues += ",\":orderStatus\": \"CLOSED\"";
+	}
+
+	//are we omitting closed orders?
+	if (omitClosed) {
+		filterExpression += " and #orderStatus <> :orderStatus";
+		expressionAttributeNames += ",\"#orderStatus\": \"orderStatus\"";
+		expressionAttributeValues += ",\":orderStatus\": \"CLOSED\"";
+	}
+
+	expressionAttributeNames += "}";
+	expressionAttributeValues += "}";
+
+	const params = {
+		TableName: process.env.DYNAMODB_ORDER_HEADER_TABLE_NAME,
+		FilterExpression: filterExpression,
+		ExpressionAttributeNames: JSON.parse(expressionAttributeNames),
+    	ExpressionAttributeValues: JSON.parse(expressionAttributeValues),
+	};
+
+	return params;
+}
+
 function getOrderDetailSearchParams(orderHeader) {
 	let filterExpression = "#customerId = :customerId";
 	let expressionAttributeNames = "{\"#customerId\": \"customerId\"";
@@ -573,6 +619,127 @@ function getOrderSearchParams(order) {
 	return params;
 }
 
+function setOrderHeader(id, specRequiredItems, specOrderStatus, callback) {
+	const params = {
+		TableName: process.env.DYNAMODB_ORDER_HEADER_TABLE_NAME,
+		Key: {
+			id: id,
+		},
+		UpdateExpression: 'set #requiredItems = :requiredItems, #orderStatus = :orderStatus',
+		ExpressionAttributeNames: {
+			"#requiredItems": "requiredItems",
+			"#orderStatus": "orderStatus",
+		},
+		ExpressionAttributeValues: {
+			":requiredItems": specRequiredItems,
+			":orderStatus": specOrderStatus,
+		},
+	};
+
+	dynamoDb.update(params, (error, result) => {
+		if (error) {
+			console.error(error);
+
+			//param 1 = error
+			return callback(true);
+		} else {
+			//param 1 = error
+			return callback(false);
+		}
+	});
+}
+
+function insertAutomationTask(orderHeader, taskName, callback) {
+	if (strictOrderHeaderSearchValid(orderHeader)) {
+		//create params
+        const params1 = {
+        	TableName: process.env.DYNAMODB_AUTOMATION_TASK_TABLE_NAME,
+        };
+
+        dynamoDb.scan(params1, (error, result) => {
+        	if (error) {
+        		console.error(error);
+
+        		//param 1 = error
+        		return callback(true);
+        	} else {
+        		const sequenceNumber = result.Count + 1;
+
+        		const params2 = {
+    				TableName: process.env.DYNAMODB_AUTOMATION_TASK_TABLE_NAME,
+    				Item: {
+        				id: uuid.v1(),
+        				taskId: orderHeader.customerId + '-' + orderHeader.orderNumber + '-' + orderHeader.season,
+        				taskName: taskName,
+        				extracted: false,
+        				sequenceNumber: sequenceNumber,
+        				comment: '',
+        				timestamp: generateTimestamp(),
+    				},
+				};
+
+				dynamoDb.put(params2, (error) => {
+    				if (error) {
+            			console.error(error);
+            			
+            			//param 1 = error
+        				return callback(true);
+        			} else {
+        				//param 1 = error
+        				return callback(false);
+        			}
+    			});
+        	}
+        });
+	} else {
+		//param 1 = error
+		return callback(true);
+	}
+}
+
+function deleteOrderDetails(ids, errorOccurred, callback) {
+	let x = ids.length;
+
+	if (x === 0) {
+		callback(errorOccurred);
+	} else {
+		--x;
+
+		const params = {
+			TableName: process.env.DYNAMODB_ORDER_DETAIL_TABLE_NAME,
+			Key: {
+				id: ids[x],
+			},
+		};
+
+		dynamoDb.delete(params, (error, result) => {
+			if (error) {
+				console.error(error);
+
+				errorOccurred = true;	
+			}
+
+			//regardless of deletion success, move on to the next object
+			ids.splice(x, 1);
+			//run this method again (recursive)
+			deleteOrderDetails(ids, errorOccurred, callback);
+		});
+	}
+}
+
+function generateTimestamp() {
+	let d = new Date();
+
+    d = d.getFullYear()
+    	+ ('0' + (d.getMonth() + 1)).slice(-2)
+    	+ ('0' + d.getDate()).slice(-2) + "T"
+    	+ ('0' + d.getHours()).slice(-2)
+    	+ ('0' + d.getMinutes()).slice(-2)
+    	+ ('0' + d.getSeconds()).slice(-2);
+
+    return d;
+}
+
 //custom render classes, variables & methods
 class RenderObj {
 	constructor(callerId, username, customerId, status, statusColour, additionalInfo, req, res) {
@@ -590,7 +757,6 @@ class RenderObj {
 const viewOrderStatusId = 1;
 const viewOrderStatus2Id = 2;
 const viewScansId = 3;
-const viewScans2Id = 4;
 const viewExportStatusId = 5;
 const viewExportStatus2Id = 6;
 const viewExportScansId = 7;
@@ -614,7 +780,7 @@ const extractedOrders2Id = 24;
 
 function renderViewOrderStatus2(renderObj) {
 	if (orderHeaderSearchValid(renderObj.additionalInfo)) {
-		dynamoDb.scan(getOrderHeaderSearchParams(renderObj.additionalInfo, false), (error, result) => {
+		dynamoDb.scan(getOrderHeaderSearchParams(renderObj.additionalInfo, false, true), (error, result) => {
 			if (error) {
         		console.error(error);
 
@@ -713,7 +879,7 @@ function finaliseViewOrderStatus2(renderObj, items, pos) {
 	}
 }
 
-function renderViewScans2(renderObj) {
+function renderViewScans(renderObj) {
 	if (orderHeaderSearchValid(renderObj.additionalInfo)) {
 		dynamoDb.scan(getOrderDetailSearchParams(renderObj.additionalInfo), (error, result) => {
 			if (error) {
@@ -726,20 +892,13 @@ function renderViewScans2(renderObj) {
 						customerId: renderObj.customerId,
 						status: "Error searching db.",
 						statusColour: "red",
-        			});
-        		} else if (renderObj.callerId === viewScans2Id) {
-        			renderObj.res.render("view-scans_2", {
-						username: renderObj.username,
-						customerId: renderObj.customerId,
-						status: "Error searching db.",
-						statusColour: "red",
 						items: [],
 						orderHeader: renderObj.additionalInfo,
-					});
+        			});
         		}
     		} else {
     			//go to the next stage
-    			renderObj.res.render("view-scans_2", {
+    			renderObj.res.render("view-scans", {
     				username: renderObj.username,
 					customerId: renderObj.customerId,
 					status: renderObj.status,
@@ -752,13 +911,6 @@ function renderViewScans2(renderObj) {
 	} else {
 		if (renderObj.callerId === viewScansId) {
 			renderObj.res.render("view-scans", {
-				username: renderObj.username,
-				customerId: renderObj.customerId,
-				status: "Values in one or more fields are invalid.",
-				statusColour: "red",
-			});
-		} else if (renderObj.callerId === viewScans2Id) {
-			renderObj.res.render("view-scans_2", {
 				username: renderObj.username,
 				customerId: renderObj.customerId,
 				status: "Values in one or more fields are invalid.",
@@ -906,6 +1058,7 @@ function renderViewClosedOrders2(renderObj) {
 						statusColour: "red",
 						items: [],
 						orderHeader: renderObj.additionalInfo,
+						totalCount: 0,
 					});
         		}
 			} else {
@@ -931,6 +1084,7 @@ function renderViewClosedOrders2(renderObj) {
 									statusColour: "red",
 									items: [],
 									orderHeader: renderObj.additionalInfo,
+									totalCount: 0,
 								});
         					}
     					} else {
@@ -942,6 +1096,7 @@ function renderViewClosedOrders2(renderObj) {
 								statusColour: renderObj.statusColour,
 								items: result.Items,
 								orderHeader: renderObj.additionalInfo,
+								totalCount: result.Count,
     						});
     					}
 					});
@@ -961,6 +1116,7 @@ function renderViewClosedOrders2(renderObj) {
 							statusColour: "red",
 							items: [],
 							orderHeader: renderObj.additionalInfo,
+							totalCount: 0,
 						});
 					}
 				}
@@ -982,6 +1138,7 @@ function renderViewClosedOrders2(renderObj) {
 				statusColour: "red",
 				items: [],
 				orderHeader: renderObj.additionalInfo,
+				totalCount: 0,
 			});
 		}
 	}
@@ -1014,7 +1171,7 @@ function renderViewClosedOrders12(renderObj) {
 			} else {
 				//is it a closed order?
 				if (result.Count > 0) {
-					dynamoDb.scan(getExportDetailSearchParams(renderObj.additionalInfo), (error, result) => {
+					dynamoDb.scan(getExportDetailSearchParams(result.Items[0]), (error, result) => {
 						if (error) {
         					console.error(error);
 
@@ -1540,27 +1697,13 @@ app.get("/view-order-status_2.html", function(req, res) {
 app.get("/view-scans.html", function(req, res) {
 	//is user logged in?
 	if (req.isAuthenticated()) {
-		res.render("view-scans", {
-			username: req.user.username,
-			customerId: req.user.customer_id,
-			status: "",
-			statusColour: "",
-		});
-	} else {
-		res.sendFile(__dirname + "/login.html");
-	}
-});
-
-app.get("/view-scans_2.html", function(req, res) {
-	//is user logged in?
-	if (req.isAuthenticated()) {
 		const orderHeader = {
 			customerId: req.user.customer_id,
 			orderNumber: req.query.orderNumber,
 			season: req.query.season,
 		};
 
-		renderViewScans2(new RenderObj(viewScans2Id, req.user.username, orderHeader.customerId, "", "", orderHeader, req, res));
+		renderViewScans(new RenderObj(viewScansId, req.user.username, orderHeader.customerId, "", "", orderHeader, req, res));
 	} else {
 		res.sendFile(__dirname + "/login.html");
 	}
@@ -2002,16 +2145,66 @@ app.post("/view-order-status_2.html/del", function(req, res) {
 app.post("/view-order-status_2.html/edit", function(req, res) {
 	const editableId = req.query.id;
 
-	const orderHeader = {
-		customerId: req.user.customer_id,
-		orderNumber: req.query.orderNumber,
-		season: req.query.season,
-		editableId: editableId,
-	};
-
 	if (propertyValid(editableId)) {
-		renderViewOrderStatus2(new RenderObj(viewOrderStatus2Id, req.user.username, orderHeader.customerId, "", "", orderHeader, req, res));
+		//only edit if order isn't APPROVED
+		const params = {
+        	TableName: process.env.DYNAMODB_ORDER_HEADER_TABLE_NAME,
+        	Key: {
+            	id: editableId,
+        	},
+    	};
+
+    	dynamoDb.get(params, (error, result) => {
+    		if (error) {
+    			console.error(error);
+
+    			const orderHeader = {
+					customerId: req.user.customer_id,
+					orderNumber: req.query.orderNumber,
+					season: req.query.season,
+				};
+
+				renderViewOrderStatus2(new RenderObj(viewOrderStatus2Id, req.user.username, orderHeader.customerId, error, "red", orderHeader, req, res));
+    		} else {
+    			const dbOrderHeader = result.Item;
+
+	    		if (dbOrderHeader !== null && typeof dbOrderHeader !== 'undefined') {
+	    			if (dbOrderHeader.orderStatus !== 'APPROVED') {
+	    				const orderHeader = {
+							customerId: req.user.customer_id,
+							orderNumber: req.query.orderNumber,
+							season: req.query.season,
+							editableId: editableId,
+						};
+
+						renderViewOrderStatus2(new RenderObj(viewOrderStatus2Id, req.user.username, orderHeader.customerId, "", "", orderHeader, req, res));
+	    			} else {
+	    				const orderHeader = {
+							customerId: req.user.customer_id,
+							orderNumber: req.query.orderNumber,
+							season: req.query.season,
+						};
+
+						renderViewOrderStatus2(new RenderObj(viewOrderStatus2Id, req.user.username, orderHeader.customerId, "Cannot edit approved orders.", "red", orderHeader, req, res));
+	    			}
+    			} else {
+    				const orderHeader = {
+						customerId: req.user.customer_id,
+						orderNumber: req.query.orderNumber,
+						season: req.query.season,
+					};
+
+					renderViewOrderStatus2(new RenderObj(viewOrderStatus2Id, req.user.username, orderHeader.customerId, "Cannot determine selected record in db.", "red", orderHeader, req, res));
+    			}
+    		}
+    	});
 	} else {
+		const orderHeader = {
+			customerId: req.user.customer_id,
+			orderNumber: req.query.orderNumber,
+			season: req.query.season,
+		};
+
 		renderViewOrderStatus2(new RenderObj(viewOrderStatus2Id, req.user.username, orderHeader.customerId, "Cannot determine selected record.", "red", orderHeader, req, res));
 	}
 });
@@ -2033,36 +2226,32 @@ app.post("/view-order-status_2.html/put", function(req, res) {
 		season: req.query.season,
 	};
 
+	const selectedOrderHeader = {
+		customerId: req.user.customer_id,
+		orderNumber: req.query.selectedOrderNumber,
+		season: req.query.selectedSeason,
+	};
+
 	const id = req.query.id;
 	const specRequiredItems = req.query.requiredItems;
 	const specOrderStatus = req.query.orderStatus;
 
 	if (propertyValid(id) && propertyValid(specRequiredItems) && propertyValid(specOrderStatus)) {
-		const params = {
-        	TableName: process.env.DYNAMODB_ORDER_HEADER_TABLE_NAME,
-        	Key: {
-            	id: id,
-        	},
-        	UpdateExpression: 'set #requiredItems = :requiredItems, #orderStatus = :orderStatus',
-        	ExpressionAttributeNames: {
-            	"#requiredItems": "requiredItems",
-            	"#orderStatus": "orderStatus",
-        	},
-        	ExpressionAttributeValues: {
-            	":requiredItems": specRequiredItems,
-            	":orderStatus": specOrderStatus,
-        	},
-    	};
-
-    	dynamoDb.update(params, (error, result) => {
-    		if (error) {
-    			console.error(error);
-
-    			renderViewOrderStatus2(new RenderObj(viewOrderStatus2Id, req.user.username, orderHeader.customerId, "Unable to modify record.", "red", orderHeader, req, res));
-    		} else {
-    			renderViewOrderStatus2(new RenderObj(viewOrderStatus2Id, req.user.username, orderHeader.customerId, "Record successfully modified.", "green", orderHeader, req, res));
-    		}
-    	});
+		//insert automation task
+		insertAutomationTask(selectedOrderHeader, 'Supplier', function(error) {
+			if (error) {
+				renderViewOrderStatus2(new RenderObj(viewOrderStatus2Id, req.user.username, orderHeader.customerId, "Cannot insert automation task.", "red", orderHeader, req, res));
+			} else {
+				//automation task inserted, now set order header
+				setOrderHeader(id, specRequiredItems, specOrderStatus, function(error) {
+					if (error) {
+						renderViewOrderStatus2(new RenderObj(viewOrderStatus2Id, req.user.username, orderHeader.customerId, "Cannot modify selected record.", "red", orderHeader, req, res));
+					} else {
+						renderViewOrderStatus2(new RenderObj(viewOrderStatus2Id, req.user.username, orderHeader.customerId, "Successfully modified record.", "green", orderHeader, req, res));
+					}
+				});
+			}
+		});
 	} else {
 		renderViewOrderStatus2(new RenderObj(viewOrderStatus2Id, req.user.username, orderHeader.customerId, "Cannot determine selected record.", "red", orderHeader, req, res));
 	}
@@ -2077,16 +2266,11 @@ app.post("/view-scans.html", function(req, res) {
 
 	//are all required variables defined?
 	if (orderHeaderSearchValid(orderHeader)) {
-		res.redirect("/view-scans_2.html?orderNumber=" + orderHeader.orderNumber
+		res.redirect("/view-scans.html?orderNumber=" + orderHeader.orderNumber
 			+ "&season=" + orderHeader.season);
 	} else {
 		//flash error
-		res.render("view-scans", {
-			username: req.user.username,
-			customerId: req.user.customer_id,
-			status: "Values in one or more fields are invalid.",
-			statusColour: "red",
-		});
+		renderViewScans(new RenderObj(viewScansId, req.user.username, orderHeader.customerId, "Values in one or more fields are invalid.", "red", orderHeader, req, res));
 	}
 });
 
@@ -2869,6 +3053,45 @@ app.post("/extracted-orders.html", function(req, res) {
 			status: "Values in one or more fields are invalid.",
 			statusColour: "red",
 		});
+	}
+});
+
+app.post("/view-scans.html/del", function(req, res) {
+	const orderHeader = {
+		customerId: req.user.customer_id,
+		orderNumber: req.query.orderNumber,
+		season: req.query.season,
+	};
+
+	let body = req.body;
+
+	//are all required variables defined?
+	if (orderHeaderSearchValid(orderHeader)) {
+		if (Object.keys(body).length === 0) {
+			//flash error
+			renderViewScans(new RenderObj(viewScansId, req.user.username, orderHeader.customerId, "Please select one or more rows for deletion", "red", orderHeader, req, res));
+		} else {
+			let ids = [];
+
+			for (let key in body) {
+				ids.push(key);
+			}
+
+			deleteOrderDetails(ids, false, function(errorOccurred) {
+				let status = 'Rows successfully deleted.';
+				let statusColour = 'green';
+
+				if (errorOccurred) {
+					status = 'Error: not all selected rows have been deleted.';
+					statusColour = 'red';
+				}
+
+				renderViewScans(new RenderObj(viewScansId, req.user.username, orderHeader.customerId, status, statusColour, orderHeader, req, res));
+			});
+		}
+	} else {
+		//flash error
+		renderViewScans(new RenderObj(viewScansId, req.user.username, orderHeader.customerId, "Values in one or more fields are invalid.", "red", orderHeader, req, res));
 	}
 });
 
